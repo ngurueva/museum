@@ -112,22 +112,65 @@ const closeModal = () => {
   showModal.value = false
 }
 
+const getCsrfToken = () => {
+  const cookieValue = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return cookieValue || '';
+};
+
 const submitBooking = async () => {
   try {
+    // Форматируем телефон перед отправкой
+    const formattedPhone = form.value.phone.startsWith('+7') 
+      ? form.value.phone 
+      : `+7${form.value.phone}`;
+
     const response = await axios.post('http://localhost:8000/api/book/', {
       name: form.value.name,
-      phone: form.value.phone,
+      phone: formattedPhone,
       email: form.value.email,
-      telegram_username: form.value.telegram_username  // Отправляем telegram_username
-    })
-    console.log('✅ Сервер ответил:', response.data)
-    alert('Заявка отправлена! Письмо отправлено на почту.')
-    closeModal()
+      telegram_username: form.value.telegram_username,
+      event_id: route.params.id  // Добавляем ID события
+    }, {
+      headers: {
+        'X-CSRFToken': getCsrfToken(),
+        'Content-Type': 'application/json'
+      },
+      withCredentials: true
+    });
+
+    console.log('✅ Сервер ответил:', response.data);
+    alert('Заявка отправлена! Письмо отправлено на почту.');
+    closeModal();
+    
+    // Очищаем форму после успешной отправки
+    form.value = {
+      name: '',
+      phone: '',
+      email: '',
+      telegram_username: ''
+    };
   } catch (error) {
-    console.error('❌ Ошибка при отправке заявки:', error)
-    alert('Произошла ошибка. Попробуйте позже.')
+    console.error('❌ Полная информация об ошибке:', {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      config: error.config
+    });
+    
+    if (error.response?.status === 403) {
+      if (error.response.data?.detail === 'CSRF Failed: CSRF token missing or incorrect.') {
+        alert('Ошибка безопасности. Пожалуйста, обновите страницу и попробуйте снова.');
+      } else {
+        alert('Доступ запрещен. У вас нет прав для этого действия.');
+      }
+    } else {
+      alert('Произошла ошибка. Попробуйте позже.');
+    }
   }
-}
+};
 
 onMounted(fetchEvent)
 </script>

@@ -2,9 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import EventsView from '@/views/EventsView.vue'
 import EventView from '@/views/EventView.vue'
 import ReviewsView from '@/views/ReviewsView.vue'
-import UsersView from '@/views/UsersView.vue'
+import UsersView from '@/views/VisitorsView.vue'
 import ReservationsView from '@/views/ReservationsView.vue'
 import AboutView from '@/views/AboutView.vue'
+import VisitorsView from '@/views/VisitorsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,7 +16,7 @@ const router = createRouter({
       component: EventsView
     },
     {
-      path: '/events/:id', // <--- Важно! ":id"
+      path: '/events/:id',
       name: 'EventView',
       component: EventView
     },
@@ -25,9 +26,9 @@ const router = createRouter({
       component: ReviewsView
     },
     {
-      path: '/users', 
-      name: 'UsersView',
-      component: UsersView
+      path: '/visitors', 
+      name: 'VisitorsView',
+      component: VisitorsView
     },
     {
       path: '/reservations', 

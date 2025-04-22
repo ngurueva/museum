@@ -50,18 +50,26 @@ class EventSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         schedules_data = self.initial_data.get('schedules')
+
+        # Обработка string → list
         if isinstance(schedules_data, str):
-            import json
-            schedules_data = json.loads(schedules_data)
+            try:
+                schedules_data = json.loads(schedules_data)
+            except json.JSONDecodeError:
+                raise serializers.ValidationError({"schedules": "Невалидный JSON формат"})
+
+        # Если schedules не передан — не трогаем его
+        if schedules_data is not None:
+            instance.schedules.all().delete()
+            for schedule in schedules_data:
+                EventSchedule.objects.create(event=instance, **schedule)
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
-        instance.schedules.all().delete()
-        for schedule in schedules_data:
-            EventSchedule.objects.create(event=instance, **schedule)
         return instance
+
 
 
 

@@ -4,9 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 import App from './App.vue'
 import router from './router'
-import axios from 'axios' // ← ВАЖНО!
+import axios from 'axios'
 
-axios.defaults.withCredentials = true // ← Теперь сработает!
+axios.defaults.withCredentials = true 
 
 const app = createApp(App)
 

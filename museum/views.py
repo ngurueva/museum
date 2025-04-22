@@ -24,6 +24,7 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import generics
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -231,3 +232,18 @@ class EventListAPIView(ListAPIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Event.DoesNotExist:
             return Response({"error": "Event not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import permissions
+
+class BookView(APIView):
+    permission_classes = [permissions.AllowAny]  # Или ваши кастомные права
+    
+    def post(self, request):
+        # Ваша логика обработки бронирования
+        print("Полученные данные:", request.data)
+        # ... обработка данных ...
+        return Response({"status": "success"}, status=201)

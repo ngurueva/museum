@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}
+
+{% block nav-global %}
+<div id="user-tools">
+    ДОБРО ПОЖАЛОВАТЬ, {{ user.username }}.
+    <a href="http://localhost:5173" target="_blank">ОТКРЫТЬ САЙТ</a> /
+    <a href="{% url 'admin:password_change' %}">ИЗМЕНИТЬ ПАРОЛЬ</a> /
+    <a href="{% url 'admin:logout' %}">ВЫЙТИ</a>
+</div>
+{% endblock %}

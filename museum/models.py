@@ -37,3 +37,6 @@ class TelegramUser(models.Model):
 
     def __str__(self):
         return f"@{self.username} - {self.chat_id}"
+    
+
+ 

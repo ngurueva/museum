@@ -199,23 +199,31 @@ const removeSchedule = (idx) => {
   modalEvent.value.schedules.splice(idx, 1)
 }
 
-
 const toggleVisibility = async (event) => {
+  const originalVisibility = event.is_visible;
   try {
-    const updatedEvent = { ...event, is_visible: !event.is_visible }
-
-    await axios.put(`/api/events/${event.id}/`, updatedEvent, {
+    const response = await axios.patch(`/api/events/${event.id}/`, {
+      is_visible: !originalVisibility
+    }, {
       headers: {
         'X-CSRFToken': Cookies.get('csrftoken'),
-      }
-    })
+      },
+    });
 
-    // Обновляем локально для мгновенного отображения
-    event.is_visible = !event.is_visible
+    // Найти индекс события
+    const index = events.value.findIndex(e => e.id === event.id);
+    if (index !== -1) {
+      // Обновляем локально
+      events.value[index] = response.data;
+    }
   } catch (e) {
-    console.error('Ошибка изменения видимости:', e)
+    console.error('Ошибка изменения видимости:', e);
+    alert('Не удалось изменить видимость. Попробуйте позже.');
   }
-}
+};
+
+
+
 
 
 
@@ -239,16 +247,22 @@ const onRemoveClick = async (event) => {
   }
 };
 
-// Отправка формы для создания или редактирования мероприятия
-async function submitEvent() {
-  if (!eventToAdd.value || !eventToAdd.value.name || !eventToAdd.value.date) {
+const submitEvent = async () => {
+  // Проверка на обязательные поля
+  if (!modalEvent.value || !modalEvent.value.name || !modalEvent.value.capacity) {
     console.error("Данные для события неполные!");
-    return; // Останавливаем выполнение, если данные неполные
+    return; // Останавливаем выполнение
   }
 
   try {
-    const response = await axios.post("/api/events/", eventToAdd.value);
-    console.log(response.data); // Выводим ответ от сервера
+    const response = await axios.post("/api/events/", modalEvent.value, {
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken'), // Проверка CSRF токена
+      },
+      withCredentials: true, // Убедитесь, что куки отправляются с запросом
+    });
+
+    console.log(response.data); // Ответ от сервера
   } catch (error) {
     console.error("Ошибка при отправке запроса: ", error);
     if (error.response) {
@@ -257,14 +271,11 @@ async function submitEvent() {
       console.error("Ошибка запроса: ", error.message);
     }
   }
-}
-
-
-
+};
 
 onMounted(async () => {
-  await checkAuth();     // ← узнаём, кто ты
-  await fetchEvents();   // ← теперь с нужными куками
+  await checkAuth();   
+  await fetchEvents();   
 });
 
 </script>

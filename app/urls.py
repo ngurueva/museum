@@ -46,16 +46,9 @@ urlpatterns = [
     path('api/events/<int:pk>/', ShowEventView.as_view(), name='event-detail'),
     path('api/events/<int:pk>/delete/', views.get_event, name='delete_event'),
     path('api/is_authenticated/', is_authenticated_view, name='is_authenticated'),
-
-
+    path('api/book/', BookingView.as_view(), name='booking'),
 ]
 
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-    
-
-urlpatterns += [
-    path('api/book/', BookingView.as_view(), name='booking'),
-]
