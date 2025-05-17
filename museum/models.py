@@ -31,7 +31,7 @@ class EventSchedule(models.Model):
 class TelegramUser(models.Model):
     username = models.CharField(max_length=255, blank=True, null=True)
     chat_id = models.CharField(max_length=100, unique=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)  # 🔹 Вот это
+    phone = models.CharField(max_length=20, blank=True, null=True) 
     created_at = models.DateTimeField(auto_now_add=True)
 
 
